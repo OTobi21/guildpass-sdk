@@ -1,5 +1,6 @@
 import { GuildPassError } from '../errors/GuildPassError';
 import { GuildPassErrorCode } from '../errors/errorCodes';
+import { RetryConfig } from '../http/http.types';
 
 // GuildPass SDK: Exported component definition.
 export type GuildPassClientConfig = {
@@ -9,6 +10,8 @@ export type GuildPassClientConfig = {
   contractAddress?: string;
   apiKey?: string;
   timeoutMs?: number;
+  /** Global retry policy applied to all requests. Defaults to no retries. */
+  retry?: RetryConfig;
   // GuildPass SDK: End of logic containment structure block.
 };
 
