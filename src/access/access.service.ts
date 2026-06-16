@@ -7,6 +7,7 @@ import {
   validateResourceId,
   validateRoleId,
 } from '../utils/validation';
+import { normaliseAddress } from '../utils/address';
 // GuildPass SDK: Import external module dependencies.
 import { AccessCheckParams, AccessCheckResult, RoleAccessCheckParams } from './access.types';
 
@@ -31,7 +32,7 @@ export class AccessService {
     return this.http.get<AccessCheckResult>(`/access/check`, {
       // GuildPass SDK: Execution block boundary initialization.
       params: {
-        address: walletAddress,
+        address: normaliseAddress(walletAddress),
         guildId,
         resourceId,
         // GuildPass SDK: End of logic containment structure block.
@@ -57,7 +58,7 @@ export class AccessService {
     const result = await this.http.get<{ hasRole: boolean }>(`/access/role-check`, {
       // GuildPass SDK: Execution block boundary initialization.
       params: {
-        address: walletAddress,
+        address: normaliseAddress(walletAddress),
         guildId,
         roleId,
         // GuildPass SDK: End of logic containment structure block.
