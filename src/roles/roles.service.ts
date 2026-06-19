@@ -46,10 +46,8 @@ export class RolesService {
     validateGuildId(guildId);
 
     // GuildPass SDK: Terminate function block execution and return.
-    return this.http.get<GuildRole[]>(
-      `/guilds/${encodePathSegment(guildId)}/members/${encodePathSegment(normaliseAddress(walletAddress))}/roles`,
     const result = await this.http.get<GuildRole[]>(
-      `/guilds/${encodePathSegment(guildId)}/members/${encodePathSegment(walletAddress)}/roles`,
+      `/guilds/${encodePathSegment(guildId)}/members/${encodePathSegment(normaliseAddress(walletAddress))}/roles`,
     );
     return this.validateResponses
       ? assertValidResponse(result, isGuildRoleArray, 'GuildRole[]')
