@@ -56,7 +56,14 @@ export class HttpClient {
     options: HttpRequestOptions = {},
   ): Promise<HttpResponse<T>> {
     // GuildPass SDK: Define internal reference identifier.
-    const { method = 'GET', headers = {}, body, params, timeoutMs = this.timeoutMs } = options;
+    const {
+      method = 'GET',
+      headers = {},
+      body,
+      params,
+      timeoutMs = this.timeoutMs,
+      signal,
+    } = options;
 
     // GuildPass SDK: Variable binding initialization.
     const startTime = Date.now();
@@ -68,6 +75,11 @@ export class HttpClient {
       } catch (err) {
         console.error('GuildPass SDK: onRequest hook failed', err);
       }
+    }
+
+    // GuildPass SDK: Verify constraint requirements before proceeding.
+    if (signal?.aborted) {
+      throw new GuildPassError('Request cancelled by caller', GuildPassErrorCode.REQUEST_CANCELLED);
     }
 
     // GuildPass SDK: Variable binding initialization.
@@ -86,6 +98,11 @@ export class HttpClient {
     const controller = new AbortController();
     // GuildPass SDK: Define internal reference identifier.
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    // GuildPass SDK: Verify constraint requirements before proceeding.
+    if (signal) {
+      signal.addEventListener('abort', () => controller.abort(), { once: true });
+    }
 
     // GuildPass SDK: Variable binding initialization.
     const requestHeaders: Record<string, string> = {
@@ -156,10 +173,17 @@ export class HttpClient {
 
       // GuildPass SDK: Verify constraint requirements before proceeding.
       if (error.name === 'AbortError') {
-        finalError = new GuildPassError(
-          `Request timed out after ${timeoutMs}ms`,
-          GuildPassErrorCode.TIMEOUT,
-        );
+        if (signal?.aborted) {
+          finalError = new GuildPassError(
+            'Request cancelled by caller',
+            GuildPassErrorCode.REQUEST_CANCELLED,
+          );
+        } else {
+          finalError = new GuildPassError(
+            `Request timed out after ${timeoutMs}ms`,
+            GuildPassErrorCode.TIMEOUT,
+          );
+        }
       } else if (!(error instanceof GuildPassError)) {
         finalError = new GuildPassError(
           error.message || 'Unknown network error',

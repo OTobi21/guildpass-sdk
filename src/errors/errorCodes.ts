@@ -8,6 +8,7 @@ export enum GuildPassErrorCode {
   NOT_FOUND = 'NOT_FOUND',
   UNAUTHORISED = 'UNAUTHORISED',
   NOT_IMPLEMENTED = 'NOT_IMPLEMENTED',
+  REQUEST_CANCELLED = 'REQUEST_CANCELLED',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   // GuildPass SDK: End of logic containment structure block.
 }

@@ -39,6 +39,9 @@
   "author": "GuildPass",
   "license": "MIT",
   "sideEffects": false,
+  "dependencies": {
+    "js-sha3": "^0.9.3"
+  },
   "devDependencies": {
     "@types/node": "^25.9.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",

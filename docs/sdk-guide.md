@@ -28,6 +28,28 @@ try {
 }
 ```
 
+## Request Cancellation
+
+You can cancel in-flight requests using an `AbortSignal`. This is useful for UI unmounting, manual cancellation, or server-side request propagation.
+
+```typescript
+const controller = new AbortController();
+
+// Cancel after 2 seconds
+setTimeout(() => controller.abort(), 2000);
+
+try {
+  await client.access.checkAccess({
+    address: '0x...',
+    guildId: '...',
+  }, { signal: controller.signal });
+} catch (error) {
+  if (error.code === GuildPassErrorCode.REQUEST_CANCELLED) {
+    console.log('Request was cancelled by the user');
+  }
+}
+```
+
 ## Environment Support
 
 ### Node.js

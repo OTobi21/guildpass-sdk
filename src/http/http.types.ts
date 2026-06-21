@@ -8,8 +8,12 @@ export type HttpRequestOptions = {
   body?: any;
   params?: Record<string, string | number | boolean>;
   timeoutMs?: number;
+  signal?: AbortSignal;
   // GuildPass SDK: End of logic containment structure block.
 };
+
+// GuildPass SDK: Simplified options for service methods.
+export type RequestOptions = Pick<HttpRequestOptions, 'timeoutMs' | 'signal'>;
 
 // GuildPass SDK: Exported component definition.
 export type HttpResponse<T = any> = {

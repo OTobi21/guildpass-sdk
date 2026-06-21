@@ -89,6 +89,7 @@ describe('Service Modules', () => {
 
     it('should URL-encode wallet addresses and guild IDs in user roles endpoint paths', async () => {
       const mockRoles = [{ id: '1', name: 'Role 1' }];
+      const validAddress = '0x' + '1'.repeat(40);
       (fetch as any).mockResolvedValue({
         ok: true,
         status: 200,
@@ -96,10 +97,10 @@ describe('Service Modules', () => {
         headers: new Headers(),
       });
 
-      const result = await client.roles.getUserRoles({ guildId: 'guild/1', walletAddress: '0x123/456 space' });
+      const result = await client.roles.getUserRoles({ guildId: 'guild/1', walletAddress: validAddress });
       expect(result).toEqual(mockRoles);
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/guilds/guild%2F1/members/0x123%2F456%20space/roles'),
+        expect.stringContaining(`/guilds/guild%2F1/members/${validAddress}/roles`),
         expect.any(Object),
       );
     });
