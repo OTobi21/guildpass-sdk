@@ -1,9 +1,9 @@
 // GuildPass SDK: Import external module dependencies.
 import { FetchLike, HttpHooks, RetryConfig } from '../http/http.types';
-import { ChainConfig } from '../contracts/contract.types';
 import { GuildPassError } from '../errors/GuildPassError';
 import { GuildPassErrorCode } from '../errors/errorCodes';
 import { CacheAdapter } from '../cache/cache.types';
+import { ChainConfig } from '../contracts/contract.types';
 
 // GuildPass SDK: Exported component definition.
 export type GuildPassClientConfig = {
