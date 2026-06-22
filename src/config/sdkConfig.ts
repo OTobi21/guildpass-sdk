@@ -1,5 +1,6 @@
 // GuildPass SDK: Import external module dependencies.
-import { HttpHooks, RetryConfig } from '../http/http.types';
+import { FetchLike, HttpHooks, RetryConfig } from '../http/http.types';
+import { ChainConfig } from '../contracts/contract.types';
 import { GuildPassError } from '../errors/GuildPassError';
 import { GuildPassErrorCode } from '../errors/errorCodes';
 import { CacheAdapter } from '../cache/cache.types';
