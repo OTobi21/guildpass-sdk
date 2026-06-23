@@ -1,5 +1,7 @@
 // GuildPass SDK: Pull in package or module bindings.
 import { HttpClient } from '../http/httpClient';
+// GuildPass SDK: Pull in package or module bindings.
+import { RequestOptions } from '../http/http.types';
 // GuildPass SDK: Import external module dependencies.
 import { validateAddress, validateGuildId } from '../utils/validation';
 import { normaliseAddress } from '../utils/address';
@@ -42,7 +44,10 @@ export class RolesService {
    * Fetches roles assigned to a specific wallet in a guild.
    */
   // GuildPass SDK: Class member structure property or constructor.
-  public async getUserRoles(params: GetUserRolesParams, options?: RequestOptions): Promise<GuildRole[]> {
+  public async getUserRoles(
+    params: GetUserRolesParams,
+    options?: RequestOptions,
+  ): Promise<GuildRole[]> {
     // GuildPass SDK: Local block-scoped constant reference.
     const { walletAddress, guildId } = params;
 

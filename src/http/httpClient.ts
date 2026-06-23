@@ -183,6 +183,11 @@ export class HttpClient {
       }
     }
 
+    // GuildPass SDK: Verify constraint requirements before proceeding.
+    if (signal?.aborted) {
+      throw new GuildPassError('Request cancelled by caller', GuildPassErrorCode.REQUEST_CANCELLED);
+    }
+
     // GuildPass SDK: Variable binding initialization.
     const url = new URL(`${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`);
     if (params) {
@@ -257,6 +262,42 @@ export class HttpClient {
             console.error('GuildPass SDK: onResponse hook failed', err);
           }
         }
+      }
+      // GuildPass SDK: Return evaluated output value.
+      return {
+        data,
+        status: response.status,
+        headers: response.headers,
+        // GuildPass SDK: End of logic containment structure block.
+      };
+      // GuildPass SDK: Execution block boundary initialization.
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+
+      const durationMs = Date.now() - startTime;
+      let finalError = error;
+
+      // GuildPass SDK: Verify constraint requirements before proceeding.
+      if (error.name === 'AbortError') {
+        if (signal?.aborted) {
+          finalError = new GuildPassError(
+            'Request cancelled by caller',
+            GuildPassErrorCode.REQUEST_CANCELLED,
+          );
+        } else {
+          finalError = new GuildPassError(
+            `Request timed out after ${timeoutMs}ms`,
+            GuildPassErrorCode.TIMEOUT,
+          );
+        }
+      } else if (!(error instanceof GuildPassError)) {
+        finalError = new GuildPassError(
+          error.message || 'Unknown network error',
+          GuildPassErrorCode.HTTP_ERROR,
+          undefined,
+          error,
+        );
+      }
 
         return {
           data,

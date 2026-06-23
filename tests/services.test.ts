@@ -326,6 +326,7 @@ describe('Service Modules', () => {
 
     it('should URL-encode guild IDs in user roles endpoint paths', async () => {
       const mockRoles = [{ id: '1', name: 'Role 1' }];
+      const validAddress = '0x' + '1'.repeat(40);
       (fetch as any).mockResolvedValue({
         ok: true,
         status: 200,

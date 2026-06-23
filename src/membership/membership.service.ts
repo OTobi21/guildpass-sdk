@@ -1,6 +1,7 @@
 // GuildPass SDK: Import external module dependencies.
 import { HttpClient } from '../http/httpClient';
 // GuildPass SDK: Pull in package or module bindings.
+import { RequestOptions } from '../http/http.types';
 import { validateAddress, validateGuildId } from '../utils/validation';
 import { normaliseAddress } from '../utils/address';
 import { assertValidResponse } from '../validation/assertResponse';
@@ -21,7 +22,10 @@ export class MembershipService {
    * Fetches wallet membership status for a specific guild.
    */
   // GuildPass SDK: Class member structure property or constructor.
-  public async getMembership(params: MembershipParams, options?: RequestOptions): Promise<Membership> {
+  public async getMembership(
+    params: MembershipParams,
+    options?: RequestOptions,
+  ): Promise<Membership> {
     // GuildPass SDK: Local block-scoped constant reference.
     const { walletAddress, guildId } = params;
 

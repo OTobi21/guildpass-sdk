@@ -1,6 +1,7 @@
 // GuildPass SDK: Import external module dependencies.
 import { HttpClient } from '../http/httpClient';
 // GuildPass SDK: Pull in package or module bindings.
+import { RequestOptions } from '../http/http.types';
 import { validateGuildId } from '../utils/validation';
 import { encodePathSegment } from '../utils/formatting';
 import { assertValidResponse } from '../validation/assertResponse';
@@ -39,7 +40,10 @@ export class GuildsService {
    * Fetches full guild configuration including theme and social links.
    */
   // GuildPass SDK: Class member structure property or constructor.
-  public async getGuildConfig(params: GetGuildParams, options?: RequestOptions): Promise<GuildConfig> {
+  public async getGuildConfig(
+    params: GetGuildParams,
+    options?: RequestOptions,
+  ): Promise<GuildConfig> {
     // GuildPass SDK: Define internal reference identifier.
     const { guildId } = params;
     validateGuildId(guildId);

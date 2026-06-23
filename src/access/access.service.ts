@@ -1,6 +1,7 @@
 // GuildPass SDK: Import external module dependencies.
 import { HttpClient } from '../http/httpClient';
 // GuildPass SDK: Pull in package or module bindings.
+import { RequestOptions } from '../http/http.types';
 import {
   validateAddress,
   validateGuildId,
@@ -102,7 +103,10 @@ export class AccessService {
    * Checks whether a wallet has a specific role in a guild.
    */
   // GuildPass SDK: Class member structure property or constructor.
-  public async checkRoleAccess(params: RoleAccessCheckParams, options?: RequestOptions): Promise<boolean> {
+  public async checkRoleAccess(
+    params: RoleAccessCheckParams,
+    options?: RequestOptions,
+  ): Promise<boolean> {
     // GuildPass SDK: Local block-scoped constant reference.
     const { walletAddress, guildId, roleId } = params;
 
@@ -112,6 +116,7 @@ export class AccessService {
 
     // GuildPass SDK: Define internal reference identifier.
     const result = await this.http.get<{ hasRole: boolean }>(`/access/role-check`, {
+      ...options,
       // GuildPass SDK: Execution block boundary initialization.
       params: {
         address: normaliseAddress(walletAddress),
