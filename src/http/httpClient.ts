@@ -152,6 +152,12 @@ export class HttpClient {
   ): Promise<HttpResponse<T>> {
     const { method = 'GET', headers = {}, body, params, timeoutMs = this.timeoutMs, retry, signal } = options;
 
+    const requestHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(this.apiKey ? { 'X-API-Key': this.apiKey } : {}),
+      ...headers,
+    };
+
     const retryConfig = resolveRetry(this.globalRetry, retry);
     const canRetry =
       retryConfig.maxRetries > 0 &&

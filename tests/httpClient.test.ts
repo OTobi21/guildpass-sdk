@@ -430,6 +430,92 @@ describe('HttpClient', () => {
   });
 });
 
+describe('HttpClient retry + hooks together', () => {
+  const baseUrl = 'https://api.test.com';
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('retries on a retryable status while still firing request/response hooks', async () => {
+    const onRequest = vi.fn();
+    const onResponse = vi.fn();
+    const onError = vi.fn();
+
+    const client = new HttpClient(baseUrl, undefined, 10000, {
+      retry: { maxRetries: 2, baseDelayMs: 0 },
+      hooks: { onRequest, onResponse, onError },
+    });
+
+    (fetch as any)
+      .mockResolvedValueOnce({
+        ok: false, status: 503, headers: new Headers(), json: () => Promise.resolve(null),
+      })
+      .mockResolvedValueOnce({
+        ok: true, status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        json: () => Promise.resolve({ ok: true }),
+      });
+
+    const result = await client.get('/flaky');
+
+    expect(result).toEqual({ ok: true });
+    expect(fetch).toHaveBeenCalledTimes(2); // 1 failure + 1 retry
+    // onRequest fires once, before the retry loop — not once per attempt.
+    expect(onRequest).toHaveBeenCalledTimes(1);
+    // onResponse fires once, on the eventually-successful attempt.
+    expect(onResponse).toHaveBeenCalledTimes(1);
+    expect(onResponse).toHaveBeenCalledWith(expect.objectContaining({ status: 200 }));
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it('fires onError (and never onResponse) once retries are exhausted', async () => {
+    const onRequest = vi.fn();
+    const onResponse = vi.fn();
+    const onError = vi.fn();
+
+    const client = new HttpClient(baseUrl, undefined, 10000, {
+      retry: { maxRetries: 2, baseDelayMs: 0 },
+      hooks: { onRequest, onResponse, onError },
+    });
+
+    (fetch as any).mockResolvedValue({
+      ok: false, status: 503, headers: new Headers(),
+      json: () => Promise.resolve({ message: 'still down' }),
+    });
+
+    await expect(client.get('/always-down')).rejects.toMatchObject({
+      code: GuildPassErrorCode.SERVER_ERROR,
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(3); // 1 initial + 2 retries
+    expect(onRequest).toHaveBeenCalledTimes(1);
+    expect(onResponse).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledTimes(1);
+  });
+
+  it('backwards-compat: a bare RetryConfig (no hooks) still retries', async () => {
+    const client = new HttpClient(baseUrl, undefined, 10000, { maxRetries: 1, baseDelayMs: 0 });
+
+    (fetch as any)
+      .mockResolvedValueOnce({
+        ok: false, status: 503, headers: new Headers(), json: () => Promise.resolve(null),
+      })
+      .mockResolvedValueOnce({
+        ok: true, status: 200, headers: new Headers(), json: () => Promise.resolve({ ok: true }),
+      });
+
+    const result = await client.get('/flaky');
+
+    expect(result).toEqual({ ok: true });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe('HttpClient Hooks', () => {
   const baseUrl = 'https://api.test.com';
 
