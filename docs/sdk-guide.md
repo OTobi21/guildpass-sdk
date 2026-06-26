@@ -63,7 +63,6 @@ The SDK works in Node.js 18+. If you are on an older version, you may need to po
 
 The SDK is tree-shakeable and optimized for modern browsers. It does not include any Node-only dependencies.
 
-
 ## Safe Configuration Inspection
 
 `client.getConfig()` returns a public snapshot of the SDK configuration for
@@ -77,11 +76,11 @@ const client = new GuildPassClient({
 });
 
 const config = client.getConfig();
-console.log(config.apiUrl); // 'https://api.guildpass.xyz'
-console.log(config.apiKey); // undefined — apiKey is always omitted
+console.log(config.apiUrl); // https://api.guildpass.xyz
+console.log(config.apiKey); // undefined
 ```
 
-The SDK keeps the real API key internally and continues to use it for all
+The SDK keeps the real API key internally and continues to use it for
 authenticated requests. Avoid logging the original constructor config object
 directly if it contains secrets.
 
