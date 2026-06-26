@@ -236,6 +236,9 @@ pnpm typecheck
 
 # Generate TypeDoc API docs
 pnpm docs
+
+# Validate package metadata (publint — catches malformed exports, missing files, etc.)
+pnpm validate
 ```
 
 ## 🗺️ Roadmap
