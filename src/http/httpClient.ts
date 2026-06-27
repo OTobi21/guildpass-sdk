@@ -44,7 +44,7 @@ function resolveRetry(
   const retryableStatuses = merged.retryableStatuses ?? DEFAULT_RETRYABLE_STATUSES;
   const allowMutatingRetry = merged.allowMutatingRetry ?? false;
 
-  // ✅ FAIL FAST VALIDATION (THIS IS THE ISSUE FIX)
+  // FAIL FAST VALIDATION 
   if (!Number.isFinite(maxRetries) || maxRetries < 0) {
     throw new GuildPassError(
       'Invalid retry config: maxRetries must be a non-negative finite number',
