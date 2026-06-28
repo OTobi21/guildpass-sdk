@@ -69,6 +69,7 @@ export class GuildPassClient {
   private readonly config: GuildPassClientConfig;
   private readonly cache: CacheAdapter | undefined;
   private readonly cacheTtl: number | undefined;
+  private readonly inFlightRequests = new Map<string, Promise<any>>();
 
   // GuildPass SDK: Class member structure property or constructor.
   constructor(config: GuildPassClientConfig) {
@@ -182,11 +183,11 @@ export class GuildPassClient {
    * Sensitive fields such as `apiKey` are omitted from this public snapshot.   
    * The SDK continues to use the real API key internally for authenticated requests.
    */
-  public getConfig(): Omit<GuildPassClientConfig, 'apiKey'> {
-    const { apiKey: _redacted, ...safeConfig } = this.config;
-    return safeConfig;
-  }
-
+ public getConfig(): Omit<GuildPassClientConfig, 'apiKey'> {
+  const safeConfig = { ...this.config };
+  delete (safeConfig as any).apiKey;
+  return safeConfig;
+}
   // ---------------------------------------------------------------------------
   // Internal cache-wrapping factories
   // ---------------------------------------------------------------------------
@@ -208,6 +209,24 @@ export class GuildPassClient {
     }
 
     return result;
+    const cached = await this.cache!.get<T>(key);
+    if (cached !== null) return cached;
+
+    const inFlight = this.inFlightRequests.get(key);
+    if (inFlight) return inFlight;
+
+    const promise = (async () => {
+      try {
+        const result = await fn();
+        await this.cache!.set(key, result, this.cacheTtl);
+        return result;
+      } finally {
+        this.inFlightRequests.delete(key);
+      }
+    })();
+
+    this.inFlightRequests.set(key, promise);
+    return promise;
   }
 
   /**
